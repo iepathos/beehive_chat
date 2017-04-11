@@ -10,6 +10,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
+	"golang.org/x/net/websocket"
 
 	r "gopkg.in/gorethink/gorethink.v3"
 )
@@ -86,13 +87,37 @@ func CreateMessage(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// create message
 // get messages
+func FeedMessages(ws *websocket.Conn) {
+	session, err := r.Connect(r.ConnectOpts{
+		Address: "localhost:28015",
+	})
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	db := r.DB(DbName)
+
+	messages, _ := db.Table(TableName).Changes().Field("new_val").Run(session)
+	go func() {
+		var msg Message
+		for messages.Next(&msg) {
+			if msg.Message != "" {
+				log.Println(msg.Message)
+				if err = websocket.Message.Send(ws, msg); err != nil {
+					log.Println("Can't send")
+					break
+				}
+			}
+		}
+	}()
+
+}
 
 func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/create", CreateMessage)
+	router.Handle("/feed", websocket.Handler(FeedMessages))
 	server := &http.Server{
 		Addr:    "localhost:3000",
 		Handler: router,

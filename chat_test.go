@@ -124,3 +124,23 @@ func TestCreateMessage(t *testing.T) {
 	}
 	dropDatabase("test")
 }
+
+// func TestFeedMessages(t *testing.T) {
+// 	// lookup user in rethinkdb and make sure it now exists
+// 	session, err := r.Connect(r.ConnectOpts{
+// 		Address: "localhost:28015",
+// 	})
+// 	if err != nil {
+// 		log.Fatalln(err.Error())
+// 	}
+// 	createDatabase("test")
+// 	createTable(TableName)
+
+// 	// url := "/feed"
+// 	srv := httptest.NewServer(http.HandlerFunc(webs.Handler(FeedMessages)))
+// 	u, _ := url.Parse(srv.URL)
+// 	u.Scheme = "ws"
+// 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+
+// 	dropDatabase("test")
+// }
