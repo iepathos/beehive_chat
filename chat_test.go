@@ -10,54 +10,9 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	simplejson "github.com/bitly/go-simplejson"
+	"github.com/iepathos/beehive/rego"
 	r "gopkg.in/gorethink/gorethink.v3"
 )
-
-func createDatabase(databaseName string) {
-	session, err := r.Connect(r.ConnectOpts{
-		Address: "localhost:28015",
-	})
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	log.Println("Creating database", databaseName)
-	_, err = r.DBCreate(databaseName).Run(session)
-	if err != nil {
-		log.Println(err.Error())
-	}
-}
-
-func createTable(tableName string) {
-	session, err := r.Connect(r.ConnectOpts{
-		Address: "localhost:28015",
-	})
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	db := r.DB("test")
-
-	log.Println("Creating table", tableName)
-	if _, err := db.TableCreate(tableName).RunWrite(session); err != nil {
-		log.Println(err)
-	}
-}
-
-func dropDatabase(databaseName string) {
-	session, err := r.Connect(r.ConnectOpts{
-		Address: "localhost:28015",
-	})
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	log.Println("Dropping database", databaseName)
-	_, err = r.DBDrop(databaseName).Run(session)
-	if err != nil {
-		log.Println(err.Error())
-	}
-}
 
 func TestCreateMessage(t *testing.T) {
 	// lookup user in rethinkdb and make sure it now exists
@@ -67,8 +22,8 @@ func TestCreateMessage(t *testing.T) {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	createDatabase("test")
-	createTable(TableName)
+	rego.CreateDatabase("test")
+	rego.CreateTable(TableName)
 
 	url := "/create"
 	jsonStr := []byte(`{"username":"Saitama","message":"herro","room":"onepunch"}`)
@@ -122,7 +77,7 @@ func TestCreateMessage(t *testing.T) {
 	if count != 1 {
 		t.Errorf("Expected RethinkDB chat table to have count of 1")
 	}
-	dropDatabase("test")
+	rego.DropDatabase("test")
 }
 
 // func TestFeedMessages(t *testing.T) {
@@ -133,8 +88,8 @@ func TestCreateMessage(t *testing.T) {
 // 	if err != nil {
 // 		log.Fatalln(err.Error())
 // 	}
-// 	createDatabase("test")
-// 	createTable(TableName)
+// 	rego.CreateDatabase("test")
+// 	rego.CreateTable(TableName)
 
 // 	// url := "/feed"
 // 	srv := httptest.NewServer(http.HandlerFunc(webs.Handler(FeedMessages)))
@@ -142,5 +97,5 @@ func TestCreateMessage(t *testing.T) {
 // 	u.Scheme = "ws"
 // 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 
-// 	dropDatabase("test")
+// 	rego.DropDatabase("test")
 // }
