@@ -89,7 +89,7 @@ func TestCreateMessage(t *testing.T) {
 
 	// Check the status code is what we expect.
 	if status := rr.Code; status != http.StatusCreated {
-		t.Errorf("CreateUser handler returned wrong status code: got %v want %v",
+		t.Errorf("CreateMessage handler returned wrong status code: got %v want %v",
 			status, http.StatusCreated)
 	}
 
@@ -120,7 +120,7 @@ func TestCreateMessage(t *testing.T) {
 	cursor.One(&count)
 	cursor.Close()
 	if count != 1 {
-		t.Errorf("Expected RethinkDB users table to have count of 1")
+		t.Errorf("Expected RethinkDB chat table to have count of 1")
 	}
 	dropDatabase("test")
 }
