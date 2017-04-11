@@ -102,7 +102,7 @@ func FeedMessages(ws *websocket.Conn) {
 		var msg Message
 		for messages.Next(&msg) {
 			if msg.Message != "" {
-				log.Println(msg.Message)
+				log.Println("%s: %s", msg.Username, msg.Message)
 				if err = websocket.Message.Send(ws, msg); err != nil {
 					log.Println("Can't send")
 					break
